@@ -1,5 +1,5 @@
 import { Client } from "tmi.js";
-import { speak, getInstalledVoices } from "say";
+import { speak } from "say";
 import secret from "../.secret.json"
 
 const client = Client({
@@ -19,11 +19,12 @@ client.on("message", onMessageHandler);
 client.on("connected", onConnectedHandler);
 client.connect();
 
-console.log(getInstalledVoices(console.log))
+const speakSpeed = 0.8
+
 function onMessageHandler(channel, tags, message, self) {
   if (self) return;
 
-  speak(`${tags.username} says ${message}`, "Alex", 0.8);
+  speak(`${tags.username} says ${message}`, "Alex", speakSpeed);
 }
 
 function onConnectedHandler(addr, port) {
