@@ -37,6 +37,5 @@ export function createBot(secret: BotSecret) {
     console.log(`* Connected to ${addr}:${port}`)
   })
 
-
   return ttsBot
 }

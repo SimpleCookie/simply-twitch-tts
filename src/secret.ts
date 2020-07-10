@@ -30,7 +30,7 @@ async function createAndGetSecret() {
   }
   console.log("You can get the credentials from Twitch.")
   await new Promise((resolve) =>
-    reader.question("What is your OAUTH_TOKEN? ", (OAUTH_TOKEN) => {
+    reader.question("What is your OAUTH_TOKEN? You can get one from https://twitchapps.com/tmi/ ", (OAUTH_TOKEN) => {
       secret.OAUTH_TOKEN = OAUTH_TOKEN
       return resolve()
     }),
