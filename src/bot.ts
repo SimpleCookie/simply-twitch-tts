@@ -23,7 +23,7 @@ export function createBot(secret: BotSecret) {
       reconnect: true,
       secure: true,
     },
-    channels: [secret.CHANNEL_NAME],
+    channels: [`#${secret.CHANNEL_NAME}`],
   })
 
   ttsBot.on("message", (channel, tags, message, self) => {
