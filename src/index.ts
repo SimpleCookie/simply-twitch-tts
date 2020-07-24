@@ -5,7 +5,7 @@ async function run() {
   const authenticator = new Authenticator()
   const sessionInfo = await authenticator.setup()
   const botSecret = {
-    OAUTH_TOKEN: `OAUTH:${sessionInfo.access_token}`,
+    OAUTH_TOKEN: `oauth:${sessionInfo.access_token}`,
     BOT_USERNAME: "CookieBot",
     CHANNEL_NAME: "#SimpleCookie",
   }
