@@ -1,11 +1,18 @@
 import { createBot } from "./bot"
-import { getSecret } from "./secret"
-import axios from "axios"
+import { Authenticator } from "./Authenticator"
 
 async function run() {
-  const secret = await getSecret()
+  const authenticator = new Authenticator()
+  const sessionInfo = await authenticator.setup()
+  const botSecret = {
+    OAUTH_TOKEN: `OAUTH:${sessionInfo.access_token}`,
+    BOT_USERNAME: "CookieBot",
+    CHANNEL_NAME: "#SimpleCookie",
+  }
+
   try {
-    const bot = createBot(secret)
+    const bot = createBot(botSecret)
+
     bot
       .connect()
       .then(() => console.log("connected."))
