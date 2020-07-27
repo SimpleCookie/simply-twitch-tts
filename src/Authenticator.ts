@@ -1,27 +1,23 @@
 import axios from "axios"
-import { question } from "./utilities"
-import { readFileSync, writeFile } from "fs"
+import { question, readFromFile, saveToFile } from "./utilities"
 
 export class Authenticator {
   private clientId: string
   private clientSecret: string
-  private tokenUrl = "https://id.twitch.tv/oauth2/token"
-  private clientInfoPath = `${process.cwd()}/.client-info.json`
-  private accessToken?: string
+  private appTokenUrl = "https://id.twitch.tv/oauth2/token"
+  private userToken: string
+  private appToken: string
 
-  async setup() {
-    try {
-      await this.readClientInfoFile()
-    } catch (error) {
-      console.log(error)
-      await this.requestClientInfo()
-    }
-    return this.fetchToken()
+  async initialise() {
+    const { clientId, clientSecret, userToken } = await readFromFile()
+    this.clientId = clientId
+    this.clientSecret = clientSecret
+    this.userToken = userToken
   }
 
-  async fetchToken(): Promise<AuthResponse> {
+  async fetchAppToken(): Promise<AuthResponse> {
     const { status, data } = await axios.post(
-      this.tokenUrl,
+      this.appTokenUrl,
       {},
       {
         params: {
@@ -32,40 +28,33 @@ export class Authenticator {
         },
       },
     )
-    console.log("response", status)
-    this.accessToken = data.access_token
+    console.log(`HTTP-status ${status}`)
+    this.appToken = data.access_token
     return data
   }
 
-  async readClientInfoFile() {
-    const fileData: any = readFileSync(this.clientInfoPath)
-    const { clientId, clientSecret } = JSON.parse(fileData)
-    this.clientId = clientId
-    this.clientSecret = clientSecret
-
-    if (!clientId || !clientSecret) {
-      throw new Error(`Fel i ${this.clientInfoPath}`)
-    }
+  async getUserAccess(): Promise<string> {
+    if (!this.userToken) await this.requestUserAccess()
+    return this.userToken
   }
 
-  async requestClientInfo() {
+  async getAppAccess(): Promise<string> {
+    if (!this.clientId || !this.clientSecret) await this.requestAppAccess()
+    if (!this.appToken) await this.fetchAppToken()
+    return this.userToken
+  }
+
+  async requestUserAccess() {
+    console.log("You can get your OAUTH_TOKEN from https://twitchapps.com/tmi/")
+    this.userToken = await question("Enter OAUTH_TOKEN: ")
+    saveToFile({ userToken: this.userToken })
+  }
+
+  async requestAppAccess() {
     console.log("You can get the credentials from Twitch.")
     this.clientId = await question("Enter client id: ")
     this.clientSecret = await question("Enter client secret: ")
-
-    this.saveClientInfoToFile(this.clientId, this.clientSecret)
-  }
-
-  getToken(): string {
-    return this.accessToken
-  }
-
-  saveClientInfoToFile(clientId, clientSecret) {
-    writeFile(
-      this.clientInfoPath,
-      JSON.stringify({ clientId, clientSecret }, null, 2),
-      console.log,
-    )
+    saveToFile({ clientId: this.clientId, clientSecret: this.clientSecret })
   }
 }
 
@@ -74,8 +63,4 @@ export interface AuthResponse {
   expires_in: number
   scope: string[]
   token_type: string
-}
-export interface ClientInfo {
-  clientId: string
-  clientSecret: string
 }
