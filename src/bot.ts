@@ -1,5 +1,5 @@
 import { Client } from "tmi.js"
-import { speak } from "say"
+import speaker from "async-sayjs"
 import { question, saveToFile, readFromFile } from "./utilities"
 
 export class Bot {
@@ -22,17 +22,21 @@ export class Bot {
       channels: [`#${this.channel}`],
     })
 
-    ttsBot.on("message", (channel, tags, message, self) => {
-      if (self) return
 
-      const speakSpeed = 0.8
-      speak(`${tags.username} says ${message}`, "Alex", speakSpeed)
+    ttsBot.on("message", (channel, tags, message, self) => {
+      const wordLimit = 18
+      const characterLimit = 90
+      if (self) return
+      if (message.length > characterLimit || message.split(' ').length > wordLimit) {
+        console.log(`Skipped ${tags.username}'s msg: ${message}`)
+        return
+      }
+      speaker.speak(`${tags.username} says ${message}`)
     })
 
     ttsBot.on("connected", (addr, port) => {
       console.log(`* Connected to ${addr}:${port}`)
     })
-
     return ttsBot
   }
 

@@ -5,7 +5,7 @@ const reader = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 })
-const clientInfoPath = `${process.cwd()}/.client-info.json`
+const clientInfoPath = `${process.cwd()}/.secrets.json`
 
 export async function question(message: string): Promise<string> {
   return new Promise((resolve) => {
