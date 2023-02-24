@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "async-sayjs": "^1.0.3",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "say": "^0.16.0",
     "tmi.js": "^1.5.0",
     "uuid": "^8.2.0"
